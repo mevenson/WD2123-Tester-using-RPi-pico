@@ -191,8 +191,11 @@
 #define BAUD_RATE 115200
 
 // Use pins 4 and 5 for UART1
-#define UART_TX_PIN  4   // this is TX from the pico (RX on the FTDI)
-#define UART_RX_PIN  5   // this is RX from the pico (TX on the FTDI)
+#define UART_TX_PIN  4      // this is TX from the pico (RX on the FTDI)
+#define UART_RX_PIN  5      // this is RX from the pico (TX on the FTDI)
+
+#define MODE    0xCE        // 2 stop bits/no parity/8 bit data/16x sampling
+#define CONTROL 0x27        // force ~RTS low, RX/Tx clock common and enable Tx/Rx
 
 int pulse_width = 3;        // a value of 3 will give approcimately a 1ms pulse on the read and write lines
 
@@ -312,10 +315,13 @@ void set_cs(int cs)
     }
 }
 
+//  /D low is for reading or writing on the serial connection ;
+//  C/D high is for writing the mode and the command registers or reading the status register for each channel.
+
 void wd_write(int cs, uint8_t value, bool is_data) 
 {
     set_cs(cs);
-    gpio_put(PIN_A0, is_data ? 1 : 0);  // Set A0: HIGH for data, LOW for control
+    gpio_put(PIN_A0, is_data ? 0 : 1);  // Set A0: HIGH for control, LOW for data
     set_data_bus_dir(true);
     write_data_bus(value);
     gpio_put(PIN_WR, 0);
@@ -327,7 +333,7 @@ void wd_write(int cs, uint8_t value, bool is_data)
 uint8_t wd_read(int cs, bool is_data) 
 {
     set_cs(cs);
-    gpio_put(PIN_A0, is_data ? 1 : 0);  // Set A0: HIGH for data, LOW for status
+    gpio_put(PIN_A0, is_data ? 0 : 1);  // Set A0: HIGH for status, LOW for data
     set_data_bus_dir(false);
     gpio_put(PIN_RD, 0);
     my_sleep_us(pulse_width);       // may require adjustment
@@ -353,8 +359,8 @@ void wd_reset()
 // the chip - not the channels
 void setup_channel() 
 {
-    wd_write(3, 0x16, false);       // Mode register: 8 data, no parity, 1 stop, x16 clock
-    wd_write(3, 0x03, false);       // Command register: Enable TX and RX
+    wd_write(3, MODE,    false);       // Mode register: 8 data, no parity, 1 stop, x16 clock (was 0x16)
+    wd_write(3, CONTROL, false);       // Command register: Enable TX and RX (was 0x03)
 }
 
 void test_channel(const char *label, int cs) 
