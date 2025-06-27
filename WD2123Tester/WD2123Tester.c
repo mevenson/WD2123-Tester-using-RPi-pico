@@ -16,7 +16,7 @@
     From Michel Wurtz
     ------------------------------------------------------------------------------------------------------------------
 
-    The WD2123 is a nice chip, but a little tricky because it use only CS1, CS2, CS3 and C/D 
+    The WD2123 is a nice chip, but a little tricky because it uses only CS1, CS2, CS3 and C/D 
     to select more than 6 registers... Typically, C/D is tied to Address line 0.
 
         Only one CSx should be low at a time
@@ -170,12 +170,12 @@
 //      GPIO27    32
 //      GPIO28    34
 //                  GPIO    pin number on pico  pin number on WD2123
-#define PIN_CS1     17      //  22              5
-#define PIN_CS2     18      //  24              
-#define PIN_CS3     19      //  25              
-#define PIN_RD      20      //  26              
-#define PIN_WR      21      //  27              
-#define PIN_A0      22      // 
+#define PIN_CS1     17      //  22               5
+#define PIN_CS2     18      //  24              16
+#define PIN_CS3     19      //  25              18
+#define PIN_RD      20      //  26               4
+#define PIN_WR      21      //  27              17
+#define PIN_A0      22      //  29               6
 
 // the data line will use 7 through 14
 #define PIN_D0       7      //   10, 11, 12, 14, 15, 16, 17, 19
